@@ -50,6 +50,7 @@ public class SnifferConfigInitializer {
     private static boolean IS_INIT_COMPLETED = false;
 
     /**
+     * /config/agent.config -> 系统环境变量 -> agent启动参数，优先级依次上升
      * If the specified agent config path is set, the agent will try to locate the specified agent config. If the
      * specified agent config path is not set , the agent will try to locate `agent.config`, which should be in the
      * /config directory of agent package.
@@ -66,6 +67,9 @@ public class SnifferConfigInitializer {
             AGENT_SETTINGS.load(configFileStream);
             for (String key : AGENT_SETTINGS.stringPropertyNames()) {
                 String value = (String) AGENT_SETTINGS.get(key);
+                // 配置值里的占位符替换
+                // aaa = xxx
+                // bbb = ${aaa}-yyy -> xxx-yyy
                 AGENT_SETTINGS.put(key, PropertyPlaceholderHelper.INSTANCE.replacePlaceholders(value, AGENT_SETTINGS));
             }
 
@@ -74,6 +78,8 @@ public class SnifferConfigInitializer {
         }
 
         try {
+            // 用环境变量的值覆盖配置文件中的值
+            // 以skywalking开头的环境变量
             overrideConfigBySystemProp();
         } catch (Exception e) {
             LOGGER.error(e, "Failed to read the system properties.");
@@ -85,6 +91,7 @@ public class SnifferConfigInitializer {
                 agentOptions = agentOptions.trim();
                 LOGGER.info("Agent options is {}.", agentOptions);
 
+                //  用命令行参数覆盖配置文件中的值
                 overrideConfigByAgentOptions(agentOptions);
             } catch (Exception e) {
                 LOGGER.error(e, "Failed to parse the agent options, val is {}.", agentOptions);
@@ -93,6 +100,7 @@ public class SnifferConfigInitializer {
 
         initializeConfig(Config.class);
         // reconfigure logger after config initialization
+        // 根据配置信息重新指定日志解析器
         configureLogger();
         LOGGER = LogManager.getLogger(SnifferConfigInitializer.class);
 
@@ -102,6 +110,7 @@ public class SnifferConfigInitializer {
         if (StringUtil.isEmpty(Config.Collector.BACKEND_SERVICE)) {
             throw new ExceptionInInitializerError("`collector.backend_service` is missing.");
         }
+        // 做个容错，PEER值小于3，变成200
         if (Config.Plugin.PEER_MAX_LENGTH <= 3) {
             LOGGER.warn(
                 "PEER_MAX_LENGTH configuration:{} error, the default value of 200 will be used.",

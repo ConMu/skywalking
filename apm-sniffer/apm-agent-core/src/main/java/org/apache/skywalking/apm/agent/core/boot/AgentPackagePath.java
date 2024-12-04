@@ -47,8 +47,9 @@ public class AgentPackagePath {
     }
 
     private static File findPath() throws AgentPackageNotFoundException {
+        // 最终返回agent.jar包的绝对路径
         String classResourcePath = AgentPackagePath.class.getName().replaceAll("\\.", "/") + ".class";
-
+        // AgentPackagePath 一般情况下是被 AppClassLoader 加载的，类加载器的知识
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (resource != null) {
             String urlString = resource.toString();

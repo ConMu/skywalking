@@ -64,6 +64,10 @@ public class SkyWalkingAgent {
     public static void premain(String agentArgs, Instrumentation instrumentation) throws PluginException {
         final PluginFinder pluginFinder;
         try {
+            // 1、初始化配置，三个优先级
+            // 2、配置信息配置到Config类
+            // 3、根据配置信息初始化日志解析器
+            // 4、检查servername跟上报地址
             SnifferConfigInitializer.initializeCoreConfig(agentArgs);
         } catch (Exception e) {
             // try to resolve a new logger, and use the new logger to write the error log here

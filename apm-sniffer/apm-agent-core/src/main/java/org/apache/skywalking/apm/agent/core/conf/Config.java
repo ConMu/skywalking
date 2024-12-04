@@ -31,6 +31,7 @@ import org.apache.skywalking.apm.agent.core.plugin.bytebuddy.ClassCacheMode;
 import org.apache.skywalking.apm.util.Length;
 
 /**
+ * 多个配置模块 配置模块.配置项，详见agent.config
  * This is the core config in sniffer agent.
  */
 public class Config {
