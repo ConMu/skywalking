@@ -22,11 +22,12 @@ import org.apache.skywalking.apm.agent.core.boot.PluginConfig;
 
 public class DubboPluginConfig {
 
+    // agent.config 配置模块.配置项
     public static class Plugin {
 
         @PluginConfig(root = DubboPluginConfig.class)
         public static class Dubbo {
-
+            //plugin.dubbo.COLLECT_CONSUMER_ARGUMENTS
             public static boolean COLLECT_CONSUMER_ARGUMENTS = false;
 
             public static int CONSUMER_ARGUMENTS_LENGTH_THRESHOLD = 256;

@@ -49,6 +49,7 @@ public class AgentClassLoader extends ClassLoader {
     static {
         /*
          * Try to solve the classloader dead lock. See https://github.com/apache/skywalking/pull/2016
+         * 开启类加载器的并行加载模式，改方法原理是把类加载器锁的粒度减小
          */
         registerAsParallelCapable();
     }

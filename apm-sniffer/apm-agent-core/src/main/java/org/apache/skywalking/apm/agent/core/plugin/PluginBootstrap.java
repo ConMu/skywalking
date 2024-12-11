@@ -42,6 +42,7 @@ public class PluginBootstrap {
         AgentClassLoader.initDefaultLoader();
 
         PluginResourcesResolver resolver = new PluginResourcesResolver();
+        //拿到所有 skywalking-plugin.def 资源
         List<URL> resources = resolver.getResources();
 
         if (resources == null || resources.size() == 0) {
@@ -63,6 +64,7 @@ public class PluginBootstrap {
         for (PluginDefine pluginDefine : pluginClassList) {
             try {
                 LOGGER.debug("loading plugin class {}.", pluginDefine.getDefineClass());
+                // 通过Class.forName 加载类，并实例化，类加载器是AgentClassLoader，插件定义就弄好了
                 AbstractClassEnhancePluginDefine plugin = (AbstractClassEnhancePluginDefine) Class.forName(pluginDefine.getDefineClass(), true, AgentClassLoader
                     .getDefault()).newInstance();
                 plugins.add(plugin);

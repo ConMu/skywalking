@@ -37,11 +37,12 @@ public class PluginSelector {
      * @see Config.Plugin#EXCLUDE_PLUGINS
      */
     public List<PluginDefine> select(List<PluginDefine> pluginDefines) {
+        // 这边可以配置忽略的插件
         if (!EXCLUDE_PLUGINS.isEmpty()) {
             List<String> excludes = Arrays.asList(EXCLUDE_PLUGINS.toLowerCase().split(","));
             return pluginDefines.stream()
-                                .filter(item -> !excludes.contains(item.getName().toLowerCase()))
-                                .collect(Collectors.toList());
+                    .filter(item -> !excludes.contains(item.getName().toLowerCase()))
+                    .collect(Collectors.toList());
         }
         return pluginDefines;
     }

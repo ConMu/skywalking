@@ -46,12 +46,14 @@ public enum PluginCfg {
                     if (pluginDefine.trim().length() == 0 || pluginDefine.startsWith("#")) {
                         continue;
                     }
+                    // 将plugin.def里面的有效配置构造成一个k v对象
                     PluginDefine plugin = PluginDefine.build(pluginDefine);
                     pluginClassList.add(plugin);
                 } catch (IllegalPluginDefineException e) {
                     LOGGER.error(e, "Failed to format plugin({}) define.", pluginDefine);
                 }
             }
+            // 剔除配置文件中指定的不需要的文件
             pluginClassList = pluginSelector.select(pluginClassList);
         } finally {
             input.close();

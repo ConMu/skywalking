@@ -40,7 +40,16 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
  * AbstractClassEnhancePluginDefine} list.
  */
 public class PluginFinder {
+    /**
+     * 为什么这边的 map泛型是<String,List>
+     * 因为对于同一个类，可能有多个插件进行字节码增强
+     * key->目标类
+     * value->所有可以对该目标类生效的插件
+     **/
     private final Map<String, LinkedList<AbstractClassEnhancePluginDefine>> nameMatchDefine = new HashMap<String, LinkedList<AbstractClassEnhancePluginDefine>>();
+    /**
+     * 间接匹配的
+     **/
     private final List<AbstractClassEnhancePluginDefine> signatureMatchDefine = new ArrayList<AbstractClassEnhancePluginDefine>();
     private final List<AbstractClassEnhancePluginDefine> bootstrapClassMatchDefine = new ArrayList<AbstractClassEnhancePluginDefine>();
 
@@ -52,6 +61,7 @@ public class PluginFinder {
                 continue;
             }
 
+            // 对所有的plugin做了分类，放到了不同的集合里
             if (match instanceof NameMatch) {
                 NameMatch nameMatch = (NameMatch) match;
                 LinkedList<AbstractClassEnhancePluginDefine> pluginDefines = nameMatchDefine.get(nameMatch.getClassName());
@@ -65,11 +75,20 @@ public class PluginFinder {
             }
 
             if (plugin.isBootstrapInstrumentation()) {
+                // 对jdk类库进行增强的
                 bootstrapClassMatchDefine.add(plugin);
             }
         }
     }
 
+    /**
+     * @Description 根据类查询可以对它进行增强的插件 TypeDescription相当于类
+     * 1、从命名插件里找
+     * 2、从间接匹配里找
+     *
+     * @Param [typeDescription]
+     * @return java.util.List<org.apache.skywalking.apm.agent.core.plugin.AbstractClassEnhancePluginDefine>
+     **/
     public List<AbstractClassEnhancePluginDefine> find(TypeDescription typeDescription) {
         List<AbstractClassEnhancePluginDefine> matchedPlugins = new LinkedList<AbstractClassEnhancePluginDefine>();
         String typeName = typeDescription.getTypeName();
@@ -88,6 +107,7 @@ public class PluginFinder {
     }
 
     public ElementMatcher<? super TypeDescription> buildMatch() {
+        // 用ElementMatcher.Junction创建了一个巨大的判断条件，包括类名匹配与条件匹配
         ElementMatcher.Junction judge = new AbstractJunction<NamedElement>() {
             @Override
             public boolean matches(NamedElement target) {
@@ -101,6 +121,7 @@ public class PluginFinder {
                 judge = judge.or(((IndirectMatch) match).buildJunction());
             }
         }
+        // 防止一些其他的字节码增强与skywalking的冲突，包了一层
         return new ProtectiveShieldMatcher(judge);
     }
 
