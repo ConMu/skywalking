@@ -52,6 +52,7 @@ public class InterceptorInstanceLoader {
         if (targetClassLoader == null) {
             targetClassLoader = InterceptorInstanceLoader.class.getClassLoader();
         }
+        // 保证每个类加载器只创建一个AgentClassLoader
         String instanceKey = className + "_OF_" + targetClassLoader.getClass()
                                                                    .getName() + "@" + Integer.toHexString(targetClassLoader
             .hashCode());

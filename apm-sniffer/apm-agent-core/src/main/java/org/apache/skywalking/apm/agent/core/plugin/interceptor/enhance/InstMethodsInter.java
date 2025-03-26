@@ -49,6 +49,7 @@ public class InstMethodsInter {
      */
     public InstMethodsInter(String instanceMethodsAroundInterceptorClassName, ClassLoader classLoader) {
         try {
+            // 对于同一份字节码，如果由不同的类加载器加载，那么它们是不同的实例。
             interceptor = InterceptorInstanceLoader.load(instanceMethodsAroundInterceptorClassName, classLoader);
         } catch (Throwable t) {
             throw new PluginException("Can't create InstanceMethodsAroundInterceptor.", t);
